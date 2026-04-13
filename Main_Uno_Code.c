@@ -141,7 +141,6 @@ void checkUNO(Player* p) {
         p->h = add(p->h, draw());
     }
 }
-
 void challengeUNO(Player* prev) {
     if (size(prev->h)==1 && prev->uno==0) {
         printf("🚨 UNO Challenge SUCCESS! %s gets +2 cards!\n", prev->name);
@@ -216,30 +215,24 @@ void trainAI() {
     printf("Enter number of training rounds: ");
     scanf("%d", &rounds);
     if (rounds <= 0) { printf("Invalid input.\n"); return; }
-
     Player p1 = {NULL,1,"AI_Train1",0};
     Player p2 = {NULL,1,"AI_Train2",0};
     int interval = rounds/10 > 0 ? rounds/10 : 1;
-
     for (int r = 0; r < rounds; r++) {
         if (r % interval == 0)
             printf("  Training: %3d%%\n", (r*100)/rounds);
-
         initDeck(); shuffle();
         p1.h = p2.h = NULL;
         for (int i = 0; i < 5; i++) {
             p1.h = add(p1.h, draw());
             p2.h = add(p2.h, draw());
         }
-
         Card top = draw(); int turn = 0;
-
         for (int steps = 0; steps < 300; steps++) {
             Player* cur = (turn==0) ? &p1 : &p2;
             int s = getState(top, size(cur->h));
             int a = chooseAI(cur, top);
             float reward = 0.0f;
-
             if (a == -1) {
                 cur->h = add(cur->h, draw());
                 reward = -0.1f;
@@ -260,10 +253,8 @@ void trainAI() {
             if (a >= 0) updateQ(s, a, reward, ns);
             turn = 1 - turn;
         }
-
         if (epsilon > epsilon_min) epsilon *= epsilon_decay;
     }
-
     printf("  Training: 100%%\n");
     printf("✅ Training Complete! (epsilon = %.4f)\n", epsilon);
 }
